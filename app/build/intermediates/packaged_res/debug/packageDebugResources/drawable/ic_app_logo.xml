@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="192dp"
+    android:height="192dp"
+    android:viewportWidth="192"
+    android:viewportHeight="192">
+
+    <!-- Background green circle -->
+    <path
+        android:fillColor="#2E7D32"
+        android:pathData="M96,12 C52.2,12 16,48.2 16,92 C16,135.8 52.2,172 96,172 C139.8,172 176,135.8 176,92 C176,48.2 139.8,12 96,12 Z" />
+
+    <!-- Milk bottle body white -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M82,45 L82,50 C82,50 75,52 75,68 L75,115 C75,128 83.6,140 96,140 C108.4,140 117,128 117,115 L117,68 C117,52 110,50 110,50 L110,45 Z" />
+
+    <!-- Bottle neck -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M89,38 L103,38 L103,44 L89,44 Z" />
+
+    <!-- Bottle cap orange -->
+    <path
+        android:fillColor="#FF9800"
+        android:pathData="M88,33 L104,33 L104,38 L88,38 Z" />
+
+    <!-- Milk fill light blue -->
+    <path
+        android:fillColor="#B3E5FC"
+        android:pathData="M80,80 L80,115 C80,125 87,138 96,138 C105,138 112,125 112,115 L112,80 Z" />
+
+    <!-- Highlight shine -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.6"
+        android:pathData="M87,55 L89,70 L88,70 L86,55 Z" />
+
+    <!-- Decorative accent ring -->
+    <path
+        android:strokeColor="#FFF9C4"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M96,12 C52.2,12 16,48.2 16,92 C16,135.8 52.2,172 96,172 C139.8,172 176,135.8 176,92 C176,48.2 139.8,12 96,12 Z" />
+
+    <!-- Small milk droplet -->
+    <path
+        android:fillColor="#FFF9C4"
+        android:pathData="M135,65 C135,65 140,55 140,50 C140,45 137,42 133,42 C129,42 126,45 126,50 C126,55 131,65 135,65 Z" />
+</vector>

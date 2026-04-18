@@ -1,0 +1,9 @@
+2026-04-14T10:17:38.491Z [INFO] ----------------------invoke list_jdks----------------------
+2026-04-14T10:17:38.492Z [INFO] [Tool.invoke]({name: list_jdks, input: {
+  "projectPath": "c:\\Users\\Sivasakthivel\\siva\\Documents\\milkman"
+}}).
+2026-04-14T10:17:38.492Z [INFO] [Tool.invoke] do invoke.
+2026-04-14T10:17:38.522Z [INFO] [Tool.invoke]({result: {
+  "message": "We found following jdks in your system:\n\n1. Java 25.0.1\n   📁 Path: C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.1.8-hotspot\\bin\n   🏷️ Source: PATH\n\nTotal: 1 JDK installation(s) found"
+}}).
+2026-04-14T10:17:38.523Z [INFO] ----------------------invoked list_jdks----------------------

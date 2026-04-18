@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name=".DairyApp"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_app_logo"
+        android:label="Milkman Dairy"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MilkmanDairy"
+        android:networkSecurityConfig="@xml/network_security_config">
+
+        <activity android:name=".ui.SuperUserProfileActivity" />
+        <activity android:name=".ui.AdminDashboardActivity" />
+        <activity android:name=".ui.CustomerDashboardActivity" />
+        <activity android:name=".ui.AddBuyerActivity" />
+        <activity android:name=".ui.SessionSummaryActivity" />
+        <activity android:name=".ui.AuditLogActivity" />
+        <activity android:name=".ui.ProfileActivity" />
+        <activity android:name=".ui.MonthlyReportActivity" />
+        <activity android:name=".ui.MilkHistoryActivity" />
+        <activity android:name=".ui.AddMilkEntryActivity" />
+        <activity android:name=".ui.CustomerListActivity" />
+        <activity android:name=".ui.AddCustomerActivity" />
+        <activity android:name=".ui.DashboardActivity" />
+        <activity
+            android:name=".ui.LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".service.PeriodicSyncService" />
+    </application>
+
+</manifest>

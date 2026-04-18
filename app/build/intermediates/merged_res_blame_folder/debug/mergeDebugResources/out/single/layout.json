@@ -1,0 +1,130 @@
+[
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_dashboard.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_dashboard.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\fragment_customers.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\fragment_customers.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_admin_dashboard.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_admin_dashboard.xml"
+    },
+    {
+        "merged": "com.milkman.dairyapp-mergeDebugResources-41:/layout/item_customer.xml",
+        "source": "com.milkman.dairyapp-main-44:/layout/item_customer.xml"
+    },
+    {
+        "merged": "com.milkman.dairyapp-mergeDebugResources-41:/layout/item_admin.xml",
+        "source": "com.milkman.dairyapp-main-44:/layout/item_admin.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\dialog_edit_milk_entry.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\dialog_edit_milk_entry.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_super_user_profile.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_super_user_profile.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_profile.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_profile.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\item_monthly_report.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\item_monthly_report.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\dialog_edit_supplier.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\dialog_edit_supplier.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\fragment_home.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\fragment_home.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_customer_dashboard.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_customer_dashboard.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\dialog_edit_buyer.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\dialog_edit_buyer.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_customer_list.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_customer_list.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\item_admin.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\item_admin.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_add_buyer.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_add_buyer.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_add_customer.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_add_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_monthly_report.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_monthly_report.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\fragment_buyers.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\fragment_buyers.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\item_audit_log.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\item_audit_log.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\fragment_profile.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\fragment_profile.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_login.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_login.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_audit_log.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_audit_log.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_session_summary.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_session_summary.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\fragment_entry.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\fragment_entry.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\fragment_reports.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\fragment_reports.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\item_milk_entry.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\item_milk_entry.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_milk_history.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_milk_history.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\item_customer.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\item_customer.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\fragment_entries.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\fragment_entries.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\fragment_settings.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\fragment_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_add_milk_entry.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_add_milk_entry.xml"
+    }
+]
