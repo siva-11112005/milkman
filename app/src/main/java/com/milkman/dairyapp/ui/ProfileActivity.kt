@@ -27,6 +27,8 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var sessionManager: SessionManager
     private var adminList = mutableListOf<AdminResponse>()
     private var selectedAdmin: AdminResponse? = null
+    private var isSuperUser: Boolean = false
+    private var isAdmin: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +38,8 @@ class ProfileActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
         viewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
 
-        val isSuperUser = sessionManager.getRole() == AppConstants.ROLE_SUPER_USER
-        val isAdmin = sessionManager.getRole() == AppConstants.ROLE_ADMIN
+        isSuperUser = sessionManager.getRole() == AppConstants.ROLE_SUPER_USER
+        isAdmin = sessionManager.getRole() == AppConstants.ROLE_ADMIN
         binding.tvProfileRole.text = "Role: ${sessionManager.getRole()}"
 
         // Show admin selector for super users
@@ -85,6 +87,15 @@ class ProfileActivity : AppCompatActivity() {
             val phone = binding.etProfilePhone.text?.toString().orEmpty()
             val address = binding.etProfileAddress.text?.toString().orEmpty()
             val price = binding.etProfilePrice.text?.toString().orEmpty().toDoubleOrNull()
+
+            if (isSuperUser && selectedAdmin != null) {
+                if (fullName.isBlank()) {
+                    Toast.makeText(this, "Admin name is required", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                updateSelectedAdminProfile(fullName)
+                return@setOnClickListener
+            }
 
             if (fullName.isBlank() || phone.isBlank() || address.isBlank()) {
                 Toast.makeText(this, "Name, phone and address are required", Toast.LENGTH_SHORT).show()
@@ -135,7 +146,9 @@ class ProfileActivity : AppCompatActivity() {
             finish()
         }
 
-        viewModel.loadProfile(sessionManager.userId().toInt())
+        sessionManager.userId().toIntOrNull()?.let {
+            viewModel.loadProfile(it)
+        }
     }
 
     private fun loadAdminsForSelector() {
@@ -153,9 +166,16 @@ class ProfileActivity : AppCompatActivity() {
                         android.R.layout.simple_list_item_1,
                         adminNames
                     )
-                    
-                    val actvAdminSelector = findViewById<AutoCompleteTextView>(R.id.actvAdminSelector)
+
+                    val actvAdminSelector = binding.actvAdminSelector
                     actvAdminSelector.setAdapter(adapter)
+                    actvAdminSelector.threshold = 0
+                    actvAdminSelector.setOnClickListener { actvAdminSelector.showDropDown() }
+                    actvAdminSelector.setOnFocusChangeListener { _, hasFocus ->
+                        if (hasFocus) {
+                            actvAdminSelector.showDropDown()
+                        }
+                    }
 
                     actvAdminSelector.setOnItemClickListener { _, _, position, _ ->
                         selectedAdmin = adminList.getOrNull(position)
@@ -165,7 +185,10 @@ class ProfileActivity : AppCompatActivity() {
                     }
 
                     // Show admin selector
-                    findViewById<TextInputLayout>(R.id.tilAdminSelector).visibility = android.view.View.VISIBLE
+                    binding.tilAdminSelector.visibility = android.view.View.VISIBLE
+                    if (admins.isEmpty()) {
+                        Toast.makeText(this@ProfileActivity, "No admins found", Toast.LENGTH_SHORT).show()
+                    }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -205,6 +228,12 @@ class ProfileActivity : AppCompatActivity() {
         val tvAdminStatus = findViewById<android.widget.TextView>(R.id.tvAdminStatus)
         val tvAdminCreated = findViewById<android.widget.TextView>(R.id.tvAdminCreated)
         val llAdminDetails = findViewById<android.widget.LinearLayout>(R.id.llAdminDetails)
+
+        // Pre-fill editable fields for super user to update selected admin profile.
+        binding.etProfileFullName.setText(admin.fullName)
+        binding.etProfilePhone.setText("")
+        binding.etProfileAddress.setText("")
+        binding.etProfilePrice.setText("")
 
         val permissionsSummary = if (admin.permissions.isEmpty()) {
             "No permission data"
@@ -257,6 +286,47 @@ class ProfileActivity : AppCompatActivity() {
         llAdminDetails.visibility = android.view.View.VISIBLE
     }
 
+    private fun updateSelectedAdminProfile(fullName: String) {
+        val admin = selectedAdmin ?: return
+
+        lifecycleScope.launch {
+            try {
+                val token = sessionManager.getToken() ?: return@launch
+                val response = ApiClient.staffService.updateStaff(
+                    staffId = admin.id,
+                    token = "Bearer $token",
+                    request = mapOf("fullName" to fullName.trim())
+                )
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(
+                            this@ProfileActivity,
+                            "Admin profile updated",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        loadAdminsForSelector()
+                        loadAdminDetails(admin.copy(fullName = fullName.trim()))
+                    } else {
+                        Toast.makeText(
+                            this@ProfileActivity,
+                            "Unable to update admin profile",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@ProfileActivity,
+                        "Error updating admin profile: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
     private fun formatPermissionKey(rawKey: String): String {
         if (rawKey.isBlank()) {
             return rawKey
@@ -270,38 +340,36 @@ class ProfileActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val token = sessionManager.getToken() ?: return@launch
-                
-                // Get admin details from backend
-                val adminDetails = ApiClient.authService.getAdmins("Bearer $token")
-                    .firstOrNull { it.id == admin.id }
-                
-                if (adminDetails != null) {
-                    // Save session with admin details
-                    sessionManager.saveSession(
-                        userId = adminDetails.id.toString(),
-                        username = adminDetails.username,
-                        role = AppConstants.ROLE_ADMIN,
-                        fullName = adminDetails.fullName,
-                        token = token
-                    )
-
+                val currentUserId = sessionManager.userId()
+                if (currentUserId.isBlank()) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            this@ProfileActivity,
-                            "🔄 Switched to ${admin.fullName}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this@ProfileActivity, "Invalid current session", Toast.LENGTH_SHORT).show()
+                    }
+                    return@launch
+                }
 
-                        // Navigate to admin dashboard
-                        val intent = Intent(this@ProfileActivity, AdminDashboardActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        startActivity(intent)
-                        finish()
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@ProfileActivity, "Admin not found", Toast.LENGTH_SHORT).show()
-                    }
+                // Keep existing id/token stable; switch UI role context to selected admin.
+                sessionManager.saveSession(
+                    userId = currentUserId,
+                    username = admin.username,
+                    role = AppConstants.ROLE_ADMIN,
+                    fullName = admin.fullName,
+                    token = token
+                )
+                ApiClient.setAdminScope(admin.id)
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@ProfileActivity,
+                        "Switched to ${admin.fullName}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    // Navigate to admin dashboard
+                    val intent = Intent(this@ProfileActivity, AdminDashboardActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+                    finish()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {

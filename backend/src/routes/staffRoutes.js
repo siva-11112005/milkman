@@ -19,11 +19,12 @@ function isOwnedByUser(record, userId) {
 
 router.get("/", requireRole("ADMIN", "SUPER_USER"), async (_req, res, next) => {
   try {
+    const currentUser = _req.effectiveUser || _req.user;
     const filter = { role: "STAFF" };
 
     // Admins can only view staff they created.
-    if (_req.user.role === "ADMIN") {
-      filter.createdBy = _req.user.sub;
+    if (currentUser.role === "ADMIN") {
+      filter.createdBy = currentUser.sub;
     }
 
     const staff = await User.find(filter).select("_id username fullName role isActive createdAt");
@@ -44,6 +45,7 @@ router.get("/", requireRole("ADMIN", "SUPER_USER"), async (_req, res, next) => {
 
 router.post("/", requireRole("ADMIN", "SUPER_USER"), async (req, res, next) => {
   try {
+    const currentUser = req.effectiveUser || req.user;
     const { username, password, fullName } = req.body;
     if (!username || !password || !fullName) {
       return res.status(400).json({ message: "username, password, fullName are required" });
@@ -68,7 +70,7 @@ router.post("/", requireRole("ADMIN", "SUPER_USER"), async (req, res, next) => {
     const passwordHash = await bcrypt.hash(password, 10);
     
     // Super user creates ADMIN, regular ADMIN creates STAFF
-    const roleToCreate = req.user.role === "SUPER_USER" ? "ADMIN" : "STAFF";
+    const roleToCreate = currentUser.role === "SUPER_USER" ? "ADMIN" : "STAFF";
     
     console.log(`\n📥 POST /staff - Creating ${roleToCreate}: ${trimmedUsername}`);
 
@@ -80,7 +82,7 @@ router.post("/", requireRole("ADMIN", "SUPER_USER"), async (req, res, next) => {
         fullName: fullName.trim(),
         role: roleToCreate,
         isActive: true,
-        createdBy: req.user.sub,
+        createdBy: currentUser.sub,
       });
     });
 
@@ -91,7 +93,7 @@ router.post("/", requireRole("ADMIN", "SUPER_USER"), async (req, res, next) => {
       tableName: "users",
       recordId: user._id || "pending",
       action: "CREATE",
-      userId: req.user.sub,
+      userId: currentUser.sub,
       details: `${roleToCreate} created: ${user.username}`,
     }).catch(err => console.error("Audit log error:", err.message));
 
@@ -112,6 +114,7 @@ router.post("/", requireRole("ADMIN", "SUPER_USER"), async (req, res, next) => {
 // Update staff/admin (Super user can update anyone, Admin can update their staff)
 router.put("/:id", requireRole("ADMIN", "SUPER_USER"), async (req, res, next) => {
   try {
+    const currentUser = req.effectiveUser || req.user;
     const { fullName, isActive } = req.body;
     const userId = req.params.id;
 
@@ -120,12 +123,12 @@ router.put("/:id", requireRole("ADMIN", "SUPER_USER"), async (req, res, next) =>
 
     // Super user can update anyone.
     // Admin can only update STAFF users they created.
-    if (req.user.role === "ADMIN") {
+    if (currentUser.role === "ADMIN") {
       if (user.role !== "STAFF") {
         return res.status(403).json({ message: "Admins can only update staff users" });
       }
 
-      if (!isOwnedByUser(user, req.user.sub)) {
+      if (!isOwnedByUser(user, currentUser.sub)) {
         return res.status(403).json({ message: "You can only update staff users you created" });
       }
     }
@@ -133,7 +136,7 @@ router.put("/:id", requireRole("ADMIN", "SUPER_USER"), async (req, res, next) =>
     const updateData = {};
     if (fullName) updateData.fullName = fullName.trim();
     if (isActive !== undefined) updateData.isActive = isActive;
-    updateData.updatedBy = req.user.sub;
+    updateData.updatedBy = currentUser.sub;
 
     console.log(`\n📝 PUT /staff/:id - Updating user: ${userId}`);
 
@@ -145,7 +148,7 @@ router.put("/:id", requireRole("ADMIN", "SUPER_USER"), async (req, res, next) =>
       tableName: "users",
       recordId: userId,
       action: "UPDATE",
-      userId: req.user.sub,
+      userId: currentUser.sub,
       details: `User updated: ${user.username}`,
     }).catch(err => console.error("Audit log error:", err.message));
 
@@ -170,6 +173,7 @@ router.put("/:id", requireRole("ADMIN", "SUPER_USER"), async (req, res, next) =>
 // Delete staff/admin (Super user can delete anyone, Admin can only delete their staff)
 router.delete("/:id", requireRole("ADMIN", "SUPER_USER"), async (req, res, next) => {
   try {
+    const currentUser = req.effectiveUser || req.user;
     const userId = req.params.id;
 
     const user = await User.findById(userId);
@@ -177,18 +181,18 @@ router.delete("/:id", requireRole("ADMIN", "SUPER_USER"), async (req, res, next)
 
     // Super user can delete anyone.
     // Admin can only delete STAFF users they created.
-    if (req.user.role === "ADMIN") {
+    if (currentUser.role === "ADMIN") {
       if (user.role !== "STAFF") {
         return res.status(403).json({ message: "Admins can only delete staff users" });
       }
 
-      if (!isOwnedByUser(user, req.user.sub)) {
+      if (!isOwnedByUser(user, currentUser.sub)) {
         return res.status(403).json({ message: "You can only delete staff users you created" });
       }
     }
 
     // Prevent deleting self
-    if (userId === req.user.sub) {
+    if (userId === currentUser.sub) {
       return res.status(403).json({ message: "You cannot delete your own account" });
     }
 
@@ -202,7 +206,7 @@ router.delete("/:id", requireRole("ADMIN", "SUPER_USER"), async (req, res, next)
       tableName: "users",
       recordId: userId,
       action: "DELETE",
-      userId: req.user.sub,
+      userId: currentUser.sub,
       details: `User deleted: ${user.username}`,
     }).catch(err => console.error("Audit log error:", err.message));
 

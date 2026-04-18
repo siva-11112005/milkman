@@ -52,10 +52,6 @@
         "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\fragment_reports.xml"
     },
     {
-        "merged": "com.milkman.dairyapp-debug-42:/layout_item_customer.xml.flat",
-        "source": "com.milkman.dairyapp-main-44:/layout/item_customer.xml"
-    },
-    {
         "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-debug-42:\\layout_activity_customer_list.xml.flat",
         "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_customer_list.xml"
     },

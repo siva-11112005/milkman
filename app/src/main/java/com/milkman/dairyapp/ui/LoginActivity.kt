@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.milkman.dairyapp.databinding.ActivityLoginBinding
+import com.milkman.dairyapp.network.ApiClient
 import com.milkman.dairyapp.service.DataSyncService
 import com.milkman.dairyapp.util.AppConstants
 import com.milkman.dairyapp.util.SessionManager
@@ -26,6 +27,7 @@ class LoginActivity : AppCompatActivity() {
 
         sessionManager = SessionManager(this)
         syncService = DataSyncService(this)
+        ApiClient.clearAdminScope()
         
         if (sessionManager.isLoggedIn()) {
             // Sync pending operations when app is opened with existing session
@@ -47,6 +49,7 @@ class LoginActivity : AppCompatActivity() {
         viewModel.loginState.observe(this) { state ->
             Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
             if (state.success && state.user != null) {
+                ApiClient.clearAdminScope()
                 sessionManager.saveSession(
                     userId = state.user.id.toString(),
                     username = state.user.username,

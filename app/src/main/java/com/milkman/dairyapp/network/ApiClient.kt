@@ -7,7 +7,17 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    private const val BASE_URL = "http://10.0.2.2:8080/api/" // 10.0.2.2 is localhost for Android emulator
+    private const val BASE_URL = "https://milkman-wjb4.onrender.com/api/"
+    @Volatile
+    private var adminScopeId: String? = null
+
+    fun setAdminScope(adminId: String?) {
+        adminScopeId = adminId?.trim()?.takeIf { it.isNotBlank() }
+    }
+
+    fun clearAdminScope() {
+        adminScopeId = null
+    }
 
     private val httpClient = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -18,9 +28,14 @@ object ApiClient {
         })
         .addInterceptor { chain ->
             val originalRequest = chain.request()
-            val newRequest = originalRequest.newBuilder()
+            val requestBuilder = originalRequest.newBuilder()
                 .header("Content-Type", "application/json")
-                .build()
+
+            adminScopeId?.let {
+                requestBuilder.header("X-Admin-Scope-Id", it)
+            }
+
+            val newRequest = requestBuilder.build()
             chain.proceed(newRequest)
         }
         .build()

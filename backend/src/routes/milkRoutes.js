@@ -11,10 +11,14 @@ router.use(requireAuth);
 
 router.get("/", async (req, res, next) => {
   try {
+    const currentUser = req.effectiveUser || req.user;
     const { date, customerId } = req.query;
     const filter = {};
     if (date) filter.entryDate = date;
     if (customerId) filter.customerId = customerId;
+    if (currentUser.role !== "SUPER_USER") {
+      filter.createdBy = currentUser.sub;
+    }
 
     const rows = await MilkEntry.find(filter)
       .populate("customerId", "name type phone")
@@ -42,6 +46,7 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
+    const currentUser = req.effectiveUser || req.user;
     const { customerId, entryDate, session, quantityLiters, pricePerLiter } = req.body;
     if (!customerId || !entryDate || !session || quantityLiters == null || pricePerLiter == null) {
       return res.status(400).json({
@@ -62,7 +67,7 @@ router.post("/", async (req, res, next) => {
         quantityLiters,
         pricePerLiter,
         amount,
-        createdBy: req.user.sub,
+        createdBy: currentUser.sub,
         updatedBy: null,
       });
     });
@@ -75,7 +80,7 @@ router.post("/", async (req, res, next) => {
       tableName: "milk_entries",
       recordId: recordId,
       action: "CREATE",
-      userId: req.user.sub,
+      userId: currentUser.sub,
       details: `Milk entry added for customer ${customerId} ${entryDate} ${session}`,
     }).catch(err => console.error("Audit log error:", err.message));
 
@@ -117,6 +122,7 @@ router.post("/", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
   try {
+    const currentUser = req.effectiveUser || req.user;
     const { quantityLiters, pricePerLiter } = req.body;
     if (quantityLiters == null || pricePerLiter == null) {
       return res.status(400).json({ message: "quantityLiters and pricePerLiter are required" });
@@ -124,7 +130,10 @@ router.put("/:id", async (req, res, next) => {
 
     const row = await MilkEntry.findById(req.params.id);
     if (!row) return res.status(404).json({ message: "Entry not found" });
-    if (isLocked(row.createdAt) && req.user.role !== "SUPER_USER") {
+    if (currentUser.role !== "SUPER_USER" && String(row.createdBy) !== String(currentUser.sub)) {
+      return res.status(403).json({ message: "You can only update entries assigned to you" });
+    }
+    if (isLocked(row.createdAt) && currentUser.role !== "SUPER_USER") {
       return res.status(403).json({ message: "Record locked after 1 hour" });
     }
 
@@ -132,7 +141,7 @@ router.put("/:id", async (req, res, next) => {
     row.quantityLiters = Number(quantityLiters);
     row.pricePerLiter = Number(pricePerLiter);
     row.amount = row.quantityLiters * row.pricePerLiter;
-    row.updatedBy = req.user.sub;
+    row.updatedBy = currentUser.sub;
     
     const updated = await queueDbOperation("UPDATE", "milkentries", async () => {
       return await row.save();
@@ -142,7 +151,7 @@ router.put("/:id", async (req, res, next) => {
       tableName: "milk_entries",
       recordId: row._id,
       action: "UPDATE",
-      userId: req.user.sub,
+      userId: currentUser.sub,
       details: "Milk entry updated",
     });
 
@@ -155,12 +164,17 @@ router.put("/:id", async (req, res, next) => {
 // Delete milk entry
 router.delete("/:id", async (req, res, next) => {
   try {
+    const currentUser = req.effectiveUser || req.user;
     const { id } = req.params;
 
     const row = await MilkEntry.findById(id);
     if (!row) return res.status(404).json({ message: "Entry not found" });
-    
-    if (isLocked(row.createdAt) && req.user.role !== "SUPER_USER") {
+
+    if (currentUser.role !== "SUPER_USER" && String(row.createdBy) !== String(currentUser.sub)) {
+      return res.status(403).json({ message: "You can only delete entries assigned to you" });
+    }
+
+    if (isLocked(row.createdAt) && currentUser.role !== "SUPER_USER") {
       return res.status(403).json({ message: "Record locked after 1 hour" });
     }
 
@@ -174,7 +188,7 @@ router.delete("/:id", async (req, res, next) => {
       tableName: "milk_entries",
       recordId: id,
       action: "DELETE",
-      userId: req.user.sub,
+      userId: currentUser.sub,
       details: `Milk entry deleted`,
     }).catch(err => console.error("Audit log error:", err.message));
 

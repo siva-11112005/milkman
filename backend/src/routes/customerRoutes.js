@@ -34,12 +34,13 @@ function canManageCustomer(user, customer) {
 
 router.get("/", async (req, res, next) => {
   try {
+    const currentUser = req.effectiveUser || req.user;
     const { q, type } = req.query;
     const filter = {};
 
     // Super users can view all customers, admins/staff are scoped to their own records.
-    if (req.user.role !== "SUPER_USER") {
-      filter.createdBy = req.user.sub;
+    if (currentUser.role !== "SUPER_USER") {
+      filter.createdBy = currentUser.sub;
     }
 
     if (q) {
@@ -61,7 +62,8 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    if (!["ADMIN", "SUPER_USER"].includes(req.user.role)) {
+    const currentUser = req.effectiveUser || req.user;
+    if (!["ADMIN", "SUPER_USER"].includes(currentUser.role)) {
       return res.status(403).json({ message: "Only admin and super user can create customers" });
     }
 
@@ -85,7 +87,7 @@ router.post("/", async (req, res, next) => {
         address,
         pricePerLiter: safePrice,
         type,
-        createdBy: req.user.sub,
+        createdBy: currentUser.sub,
         updatedBy: null,
       });
     });
@@ -98,7 +100,7 @@ router.post("/", async (req, res, next) => {
       tableName: "customers",
       recordId: recordId,
       action: "CREATE",
-      userId: req.user.sub,
+      userId: currentUser.sub,
       details: `Customer added: ${name}`,
     }).catch(err => console.error("Audit log error:", err.message));
 
@@ -135,7 +137,8 @@ router.post("/", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
   try {
-    if (!["ADMIN", "SUPER_USER"].includes(req.user.role)) {
+    const currentUser = req.effectiveUser || req.user;
+    if (!["ADMIN", "SUPER_USER"].includes(currentUser.role)) {
       return res.status(403).json({ message: "Only admin and super user can update customers" });
     }
 
@@ -147,7 +150,7 @@ router.put("/:id", async (req, res, next) => {
       return res.status(404).json({ message: "Customer not found" });
     }
 
-    if (!canManageCustomer(req.user, existingCustomer)) {
+    if (!canManageCustomer(currentUser, existingCustomer)) {
       return res.status(403).json({ message: "You can only update customers assigned to you" });
     }
 
@@ -156,7 +159,7 @@ router.put("/:id", async (req, res, next) => {
     );
     const safePrice = Number.isFinite(parsedPrice) && parsedPrice >= 0 ? parsedPrice : undefined;
 
-    const updatePayload = { updatedBy: req.user.sub };
+    const updatePayload = { updatedBy: currentUser.sub };
     if (name !== undefined) updatePayload.name = name;
     if (phone !== undefined) updatePayload.phone = phone;
     if (address !== undefined) updatePayload.address = address;
@@ -182,7 +185,7 @@ router.put("/:id", async (req, res, next) => {
       tableName: "customers",
       recordId: id,
       action: "UPDATE",
-      userId: req.user.sub,
+      userId: currentUser.sub,
       details: `Customer updated: ${customer.name}`,
     });
 
@@ -195,7 +198,8 @@ router.put("/:id", async (req, res, next) => {
 // Delete customer
 router.delete("/:id", async (req, res, next) => {
   try {
-    if (!["ADMIN", "SUPER_USER"].includes(req.user.role)) {
+    const currentUser = req.effectiveUser || req.user;
+    if (!["ADMIN", "SUPER_USER"].includes(currentUser.role)) {
       return res.status(403).json({ message: "Only admin and super user can delete customers" });
     }
 
@@ -204,7 +208,7 @@ router.delete("/:id", async (req, res, next) => {
     const customer = await Customer.findById(id);
     if (!customer) return res.status(404).json({ message: "Customer not found" });
 
-    if (!canManageCustomer(req.user, customer)) {
+    if (!canManageCustomer(currentUser, customer)) {
       return res.status(403).json({ message: "You can only delete customers assigned to you" });
     }
 
@@ -218,7 +222,7 @@ router.delete("/:id", async (req, res, next) => {
       tableName: "customers",
       recordId: id,
       action: "DELETE",
-      userId: req.user.sub,
+      userId: currentUser.sub,
       details: `Customer deleted: ${customer.name}`,
     }).catch(err => console.error("Audit log error:", err.message));
 

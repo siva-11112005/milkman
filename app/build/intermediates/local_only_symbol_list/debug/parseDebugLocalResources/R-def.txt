@@ -113,6 +113,7 @@ id btnSaveBuyer
 id btnSaveCustomer
 id btnSaveEntry
 id btnSaveProfile
+id btnSwitchAdmin
 id btnSwitchToAdmin
 id btnViewAuditLogs
 id btnViewMilkHistory

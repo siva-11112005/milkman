@@ -33,6 +33,13 @@
         android:textColor="@color/text_secondary" />
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSwitchAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_12"
+        android:text="Switch to This Admin" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnDeleteAdmin"
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="match_parent"

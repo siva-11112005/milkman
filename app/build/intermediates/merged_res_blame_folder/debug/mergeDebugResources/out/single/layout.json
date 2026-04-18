@@ -12,10 +12,6 @@
         "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_admin_dashboard.xml"
     },
     {
-        "merged": "com.milkman.dairyapp-mergeDebugResources-41:/layout/item_customer.xml",
-        "source": "com.milkman.dairyapp-main-44:/layout/item_customer.xml"
-    },
-    {
         "merged": "com.milkman.dairyapp-mergeDebugResources-41:/layout/item_admin.xml",
         "source": "com.milkman.dairyapp-main-44:/layout/item_admin.xml"
     },
@@ -40,12 +36,12 @@
         "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\dialog_edit_supplier.xml"
     },
     {
-        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\fragment_home.xml",
-        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\fragment_home.xml"
-    },
-    {
         "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\activity_customer_dashboard.xml",
         "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\activity_customer_dashboard.xml"
+    },
+    {
+        "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\fragment_home.xml",
+        "source": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-main-44:\\layout\\fragment_home.xml"
     },
     {
         "merged": "C:\\Users\\Sivasakthivel\\.gradle\\daemon\\8.7\\com.milkman.dairyapp-mergeDebugResources-41:\\layout\\dialog_edit_buyer.xml",

@@ -17,6 +17,7 @@ import com.milkman.dairyapp.network.ApiClient
 import com.milkman.dairyapp.network.models.AdminDetailsResponse
 import com.milkman.dairyapp.network.models.AdminResponse
 import com.milkman.dairyapp.network.models.CreateAdminRequest
+import com.milkman.dairyapp.util.AppConstants
 import com.milkman.dairyapp.util.SessionManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,6 +36,9 @@ class SuperUserProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_super_user_profile)
 
+        // Super user full view should not be scoped by default.
+        ApiClient.clearAdminScope()
+
         sessionManager = SessionManager(this)
         recyclerView = findViewById(R.id.recyclerViewAdmins)
         btnAddAdmin = findViewById(R.id.btnAddAdmin)
@@ -44,6 +48,7 @@ class SuperUserProfileActivity : AppCompatActivity() {
         recyclerView.adapter = AdminAdapter(
             admins = adminList,
             onAdminClick = { admin -> showAdminDetailsDialog(admin) },
+            onSwitchClick = { admin -> switchToAdmin(admin) },
             onDeleteClick = { admin -> confirmDeleteAdmin(admin) }
         )
 
@@ -299,7 +304,34 @@ class SuperUserProfileActivity : AppCompatActivity() {
         return spaced.substring(0, 1).uppercase() + spaced.substring(1)
     }
 
+    private fun switchToAdmin(admin: AdminResponse) {
+        val token = sessionManager.getToken()
+        val currentUserId = sessionManager.userId()
+
+        if (token.isNullOrBlank() || currentUserId.isBlank()) {
+            Toast.makeText(this, "Invalid session. Please login again.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Keep internal user id stable for existing local DB flows and switch role context.
+        sessionManager.saveSession(
+            userId = currentUserId,
+            username = admin.username,
+            role = AppConstants.ROLE_ADMIN,
+            fullName = admin.fullName,
+            token = token
+        )
+        ApiClient.setAdminScope(admin.id)
+
+        Toast.makeText(this, "Switched to ${admin.fullName}", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, AdminDashboardActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent)
+        finish()
+    }
+
     private fun logout() {
+        ApiClient.clearAdminScope()
         sessionManager.clearSession()
         startActivity(Intent(this, LoginActivity::class.java))
         finish()
@@ -309,12 +341,14 @@ class SuperUserProfileActivity : AppCompatActivity() {
 class AdminAdapter(
     private val admins: List<AdminResponse>,
     private val onAdminClick: (AdminResponse) -> Unit,
+    private val onSwitchClick: (AdminResponse) -> Unit,
     private val onDeleteClick: (AdminResponse) -> Unit
 ) : RecyclerView.Adapter<AdminAdapter.AdminViewHolder>() {
 
     class AdminViewHolder(
         itemView: android.view.View,
         private val onAdminClick: (AdminResponse) -> Unit,
+        private val onSwitchClick: (AdminResponse) -> Unit,
         private val onDeleteClick: (AdminResponse) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
         fun bind(admin: AdminResponse) {
@@ -324,6 +358,9 @@ class AdminAdapter(
                 "${if (admin.isActive) "Active" else "Inactive"} | Users: ${admin.assignedUsersCount} | Customers: ${admin.assignedCustomersCount}"
 
             itemView.setOnClickListener { onAdminClick(admin) }
+            itemView.findViewById<MaterialButton>(R.id.btnSwitchAdmin).setOnClickListener {
+                onSwitchClick(admin)
+            }
             itemView.findViewById<MaterialButton>(R.id.btnDeleteAdmin).setOnClickListener {
                 onDeleteClick(admin)
             }
@@ -332,7 +369,7 @@ class AdminAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdminViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_admin, parent, false)
-        return AdminViewHolder(view, onAdminClick, onDeleteClick)
+        return AdminViewHolder(view, onAdminClick, onSwitchClick, onDeleteClick)
     }
 
     override fun onBindViewHolder(holder: AdminViewHolder, position: Int) {

@@ -24,6 +24,9 @@ public final class ItemAdminBinding implements ViewBinding {
   public final MaterialButton btnDeleteAdmin;
 
   @NonNull
+  public final MaterialButton btnSwitchAdmin;
+
+  @NonNull
   public final TextView tvAdminName;
 
   @NonNull
@@ -33,10 +36,11 @@ public final class ItemAdminBinding implements ViewBinding {
   public final TextView tvAdminUsername;
 
   private ItemAdminBinding(@NonNull LinearLayout rootView, @NonNull MaterialButton btnDeleteAdmin,
-      @NonNull TextView tvAdminName, @NonNull TextView tvAdminStatus,
-      @NonNull TextView tvAdminUsername) {
+      @NonNull MaterialButton btnSwitchAdmin, @NonNull TextView tvAdminName,
+      @NonNull TextView tvAdminStatus, @NonNull TextView tvAdminUsername) {
     this.rootView = rootView;
     this.btnDeleteAdmin = btnDeleteAdmin;
+    this.btnSwitchAdmin = btnSwitchAdmin;
     this.tvAdminName = tvAdminName;
     this.tvAdminStatus = tvAdminStatus;
     this.tvAdminUsername = tvAdminUsername;
@@ -75,6 +79,12 @@ public final class ItemAdminBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btnSwitchAdmin;
+      MaterialButton btnSwitchAdmin = ViewBindings.findChildViewById(rootView, id);
+      if (btnSwitchAdmin == null) {
+        break missingId;
+      }
+
       id = R.id.tvAdminName;
       TextView tvAdminName = ViewBindings.findChildViewById(rootView, id);
       if (tvAdminName == null) {
@@ -93,8 +103,8 @@ public final class ItemAdminBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemAdminBinding((LinearLayout) rootView, btnDeleteAdmin, tvAdminName,
-          tvAdminStatus, tvAdminUsername);
+      return new ItemAdminBinding((LinearLayout) rootView, btnDeleteAdmin, btnSwitchAdmin,
+          tvAdminName, tvAdminStatus, tvAdminUsername);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

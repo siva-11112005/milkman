@@ -6,15 +6,18 @@ const router = express.Router();
 
 router.use(requireAuth);
 
-router.get("/dashboard", requireRole("ADMIN"), async (req, res, next) => {
+router.get("/dashboard", requireRole("ADMIN", "SUPER_USER"), async (req, res, next) => {
   try {
+    const currentUser = req.effectiveUser || req.user;
     const date = req.query.date;
     const month = req.query.month;
+    const ownerFilter =
+      currentUser.role === "SUPER_USER" ? {} : { createdBy: currentUser.sub };
 
     const [dailyAgg, monthlyAgg, byType] = await Promise.all([
       date
         ? MilkEntry.aggregate([
-            { $match: { entryDate: date } },
+            { $match: { ...ownerFilter, entryDate: date } },
             {
               $group: {
                 _id: null,
@@ -26,7 +29,7 @@ router.get("/dashboard", requireRole("ADMIN"), async (req, res, next) => {
         : Promise.resolve([]),
       month
         ? MilkEntry.aggregate([
-            { $match: { entryDate: { $regex: `^${month}` } } },
+            { $match: { ...ownerFilter, entryDate: { $regex: `^${month}` } } },
             {
               $group: {
                 _id: null,
@@ -38,7 +41,7 @@ router.get("/dashboard", requireRole("ADMIN"), async (req, res, next) => {
         : Promise.resolve([]),
       month
         ? MilkEntry.aggregate([
-            { $match: { entryDate: { $regex: `^${month}` } } },
+            { $match: { ...ownerFilter, entryDate: { $regex: `^${month}` } } },
             {
               $lookup: {
                 from: "customers",
@@ -72,11 +75,15 @@ router.get("/dashboard", requireRole("ADMIN"), async (req, res, next) => {
 
 router.get("/monthly", async (req, res, next) => {
   try {
+    const currentUser = req.effectiveUser || req.user;
     const { month } = req.query;
     if (!month) return res.status(400).json({ message: "month is required, e.g. 2026-04" });
 
+    const ownerFilter =
+      currentUser.role === "SUPER_USER" ? {} : { createdBy: currentUser.sub };
+
     const rows = await MilkEntry.aggregate([
-      { $match: { entryDate: { $regex: `^${month}` } } },
+      { $match: { ...ownerFilter, entryDate: { $regex: `^${month}` } } },
       {
         $lookup: {
           from: "customers",
@@ -98,7 +105,7 @@ router.get("/monthly", async (req, res, next) => {
       { $sort: { customerName: 1 } },
     ]);
 
-    if (req.user.role !== "ADMIN") {
+    if (currentUser.role !== "ADMIN") {
       return res.json(
         rows.map((r) => ({
           customerId: String(r._id),
