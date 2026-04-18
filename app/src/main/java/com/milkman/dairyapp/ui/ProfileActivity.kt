@@ -340,28 +340,21 @@ class ProfileActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val token = sessionManager.getToken() ?: return@launch
-                val currentUserId = sessionManager.userId()
-                if (currentUserId.isBlank()) {
+                if (token.isBlank()) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(this@ProfileActivity, "Invalid current session", Toast.LENGTH_SHORT).show()
                     }
                     return@launch
                 }
 
-                // Keep existing id/token stable; switch UI role context to selected admin.
-                sessionManager.saveSession(
-                    userId = currentUserId,
-                    username = admin.username,
-                    role = AppConstants.ROLE_ADMIN,
-                    fullName = admin.fullName,
-                    token = token
-                )
+                // Keep original login identity, only set acting-admin scope.
+                sessionManager.setActingAdmin(admin.id, admin.fullName)
                 ApiClient.setAdminScope(admin.id)
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         this@ProfileActivity,
-                        "Switched to ${admin.fullName}",
+                        "Viewing as ${admin.fullName}",
                         Toast.LENGTH_SHORT
                     ).show()
 

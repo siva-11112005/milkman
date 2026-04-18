@@ -21,6 +21,26 @@ class SessionManager(context: Context) {
         prefs.edit().clear().apply()
     }
 
+    fun setActingAdmin(adminId: String, adminName: String) {
+        prefs.edit()
+            .putString(KEY_ACTING_ADMIN_ID, adminId)
+            .putString(KEY_ACTING_ADMIN_NAME, adminName)
+            .apply()
+    }
+
+    fun clearActingAdmin() {
+        prefs.edit()
+            .remove(KEY_ACTING_ADMIN_ID)
+            .remove(KEY_ACTING_ADMIN_NAME)
+            .apply()
+    }
+
+    fun actingAdminId(): String? = prefs.getString(KEY_ACTING_ADMIN_ID, null)
+
+    fun actingAdminName(): String? = prefs.getString(KEY_ACTING_ADMIN_NAME, null)
+
+    fun isActingAsAdmin(): Boolean = !actingAdminId().isNullOrBlank()
+
     fun isLoggedIn(): Boolean = prefs.getBoolean(KEY_LOGGED_IN, false)
 
     fun userId(): String = prefs.getString(KEY_USER_ID, "") ?: ""
@@ -46,5 +66,7 @@ class SessionManager(context: Context) {
         private const val KEY_ROLE = "role"
         private const val KEY_FULL_NAME = "full_name"
         private const val KEY_TOKEN = "token"
+        private const val KEY_ACTING_ADMIN_ID = "acting_admin_id"
+        private const val KEY_ACTING_ADMIN_NAME = "acting_admin_name"
     }
 }

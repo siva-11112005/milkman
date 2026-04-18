@@ -306,24 +306,16 @@ class SuperUserProfileActivity : AppCompatActivity() {
 
     private fun switchToAdmin(admin: AdminResponse) {
         val token = sessionManager.getToken()
-        val currentUserId = sessionManager.userId()
-
-        if (token.isNullOrBlank() || currentUserId.isBlank()) {
+        if (token.isNullOrBlank()) {
             Toast.makeText(this, "Invalid session. Please login again.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Keep internal user id stable for existing local DB flows and switch role context.
-        sessionManager.saveSession(
-            userId = currentUserId,
-            username = admin.username,
-            role = AppConstants.ROLE_ADMIN,
-            fullName = admin.fullName,
-            token = token
-        )
+        // Keep original super user login, only apply acting-admin scope for data/permissions.
+        sessionManager.setActingAdmin(admin.id, admin.fullName)
         ApiClient.setAdminScope(admin.id)
 
-        Toast.makeText(this, "Switched to ${admin.fullName}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Viewing as ${admin.fullName}", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, AdminDashboardActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
@@ -332,6 +324,7 @@ class SuperUserProfileActivity : AppCompatActivity() {
 
     private fun logout() {
         ApiClient.clearAdminScope()
+        sessionManager.clearActingAdmin()
         sessionManager.clearSession()
         startActivity(Intent(this, LoginActivity::class.java))
         finish()

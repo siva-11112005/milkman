@@ -27,6 +27,7 @@ class LoginActivity : AppCompatActivity() {
 
         sessionManager = SessionManager(this)
         syncService = DataSyncService(this)
+        sessionManager.clearActingAdmin()
         ApiClient.clearAdminScope()
         
         if (sessionManager.isLoggedIn()) {
@@ -49,6 +50,7 @@ class LoginActivity : AppCompatActivity() {
         viewModel.loginState.observe(this) { state ->
             Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
             if (state.success && state.user != null) {
+                sessionManager.clearActingAdmin()
                 ApiClient.clearAdminScope()
                 sessionManager.saveSession(
                     userId = state.user.id.toString(),
