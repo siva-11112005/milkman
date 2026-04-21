@@ -16,6 +16,7 @@ import com.milkman.dairyapp.data.entity.CustomerEntity
 import com.milkman.dairyapp.databinding.DialogEditBuyerBinding
 import com.milkman.dairyapp.databinding.FragmentBuyersBinding
 import com.milkman.dairyapp.ui.AddBuyerActivity
+import com.milkman.dairyapp.ui.PartnerSummaryActivity
 import com.milkman.dairyapp.ui.adapters.CustomerAdapter
 import com.milkman.dairyapp.util.AppConstants
 import com.milkman.dairyapp.util.SessionManager
@@ -45,6 +46,7 @@ class BuyersFragment : Fragment() {
         val canManageCustomers = sessionManager.canManageUsersAndCustomers()
         adapter = CustomerAdapter(
             priceLabel = "Selling Price",
+            onViewSummary = { customer -> openPartnerSummary(customer) },
             onEdit = if (canManageCustomers) ({ customer -> showEditDialog(customer) }) else null,
             onDelete = if (canManageCustomers) ({ customer -> confirmDelete(customer) }) else null
         )
@@ -148,6 +150,18 @@ class BuyersFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    private fun openPartnerSummary(item: CustomerEntity) {
+        startActivity(
+            Intent(requireContext(), PartnerSummaryActivity::class.java).apply {
+                putExtra(PartnerSummaryActivity.EXTRA_CUSTOMER_ID, item.id)
+                putExtra(PartnerSummaryActivity.EXTRA_CUSTOMER_NAME, item.name)
+                putExtra(PartnerSummaryActivity.EXTRA_CUSTOMER_TYPE, item.type)
+                putExtra(PartnerSummaryActivity.EXTRA_CUSTOMER_CATEGORY, item.category)
+                putExtra(PartnerSummaryActivity.EXTRA_PRICE_PER_LITER, item.pricePerLiter)
+            }
+        )
     }
 
     override fun onDestroyView() {

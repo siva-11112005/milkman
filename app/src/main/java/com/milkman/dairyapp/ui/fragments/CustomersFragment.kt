@@ -16,6 +16,7 @@ import com.milkman.dairyapp.databinding.DialogEditSupplierBinding
 import com.milkman.dairyapp.databinding.FragmentCustomersBinding
 import com.milkman.dairyapp.service.DataSyncService
 import com.milkman.dairyapp.ui.AddCustomerActivity
+import com.milkman.dairyapp.ui.PartnerSummaryActivity
 import com.milkman.dairyapp.ui.adapters.CustomerAdapter
 import com.milkman.dairyapp.util.AppConstants
 import com.milkman.dairyapp.util.SessionManager
@@ -49,6 +50,7 @@ class CustomersFragment : Fragment() {
         val canManageCustomers = sessionManager.canManageUsersAndCustomers()
         adapter = CustomerAdapter(
             priceLabel = "Buying Price",
+            onViewSummary = { customer -> openPartnerSummary(customer) },
             onEdit = if (canManageCustomers) ({ customer -> showEditDialog(customer) }) else null,
             onDelete = if (canManageCustomers) ({ customer -> confirmDelete(customer) }) else null
         )
@@ -140,6 +142,18 @@ class CustomersFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    private fun openPartnerSummary(item: CustomerEntity) {
+        startActivity(
+            Intent(requireContext(), PartnerSummaryActivity::class.java).apply {
+                putExtra(PartnerSummaryActivity.EXTRA_CUSTOMER_ID, item.id)
+                putExtra(PartnerSummaryActivity.EXTRA_CUSTOMER_NAME, item.name)
+                putExtra(PartnerSummaryActivity.EXTRA_CUSTOMER_TYPE, item.type)
+                putExtra(PartnerSummaryActivity.EXTRA_CUSTOMER_CATEGORY, item.category)
+                putExtra(PartnerSummaryActivity.EXTRA_PRICE_PER_LITER, item.pricePerLiter)
+            }
+        )
     }
 
     private fun confirmDelete(item: CustomerEntity) {

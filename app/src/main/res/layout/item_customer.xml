@@ -56,6 +56,14 @@
             android:textStyle="bold" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnViewSummary"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height"
+            android:layout_marginTop="@dimen/spacing_12"
+            android:text="View Summary" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditCustomer"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"

@@ -41,8 +41,8 @@ class MilkHistoryActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
         viewModel = ViewModelProvider(this)[MilkEntryViewModel::class.java]
         adapter = MilkEntryAdapter(
-            canModify = sessionManager.isAdmin(),
-            userRole = sessionManager.getRole(),
+            canModify = sessionManager.hasAdminAccess(),
+            userRole = sessionManager.effectiveRole(),
             onEdit = { showEditDialog(it) },
             onDelete = { confirmDelete(it) }
         )
@@ -55,7 +55,7 @@ class MilkHistoryActivity : AppCompatActivity() {
 
         binding.btnApplyFilters.setOnClickListener { applyFilters() }
 
-        if (sessionManager.isAdmin()) {
+        if (sessionManager.hasAdminAccess()) {
             binding.btnOpenAddEntry.visibility = View.VISIBLE
             binding.btnOpenAddEntry.setOnClickListener {
                 startActivity(
@@ -103,7 +103,7 @@ class MilkHistoryActivity : AppCompatActivity() {
             true
         }
 
-        if (sessionManager.isAdmin()) {
+        if (sessionManager.hasAdminAccess()) {
             val entryOptions = listOf("All Entries", "Collection", "Distribution")
             val entryAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, entryOptions)
             entryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -117,7 +117,7 @@ class MilkHistoryActivity : AppCompatActivity() {
 
     private fun observeData() {
         viewModel.customers.observe(this) { customers ->
-            if (!sessionManager.isAdmin()) return@observe
+            if (!sessionManager.hasAdminAccess()) return@observe
 
             customerOptions.clear()
             customerOptions.add(null to "All Profiles")
@@ -142,7 +142,7 @@ class MilkHistoryActivity : AppCompatActivity() {
     private fun applyFilters() {
         val date = binding.etFilterDate.text?.toString().orEmpty().ifBlank { null }
 
-        if (sessionManager.isAdmin()) {
+        if (sessionManager.hasAdminAccess()) {
             val customerId = customerOptions.getOrNull(binding.spinnerFilterCustomer.selectedItemPosition)?.first
             val entrySelection = binding.spinnerFilterType.selectedItem?.toString().orEmpty()
             val entryType = when (entrySelection) {
@@ -162,7 +162,7 @@ class MilkHistoryActivity : AppCompatActivity() {
     }
 
     private fun showEditDialog(item: MilkEntryWithCustomer) {
-        if (TimeUtils.isLocked(item.createdAt, sessionManager.getRole())) {
+        if (TimeUtils.isLocked(item.createdAt, sessionManager.effectiveRole())) {
             Toast.makeText(this, "Record is locked. Super users can edit anytime.", Toast.LENGTH_SHORT).show()
             return
         }
@@ -187,7 +187,7 @@ class MilkHistoryActivity : AppCompatActivity() {
     }
 
     private fun confirmDelete(item: MilkEntryWithCustomer) {
-        if (TimeUtils.isLocked(item.createdAt, sessionManager.getRole())) {
+        if (TimeUtils.isLocked(item.createdAt, sessionManager.effectiveRole())) {
             Toast.makeText(this, "Record is locked. Super users can delete anytime.", Toast.LENGTH_SHORT).show()
             return
         }

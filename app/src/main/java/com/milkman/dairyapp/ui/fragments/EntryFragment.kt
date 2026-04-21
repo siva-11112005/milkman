@@ -27,7 +27,7 @@ class EntryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val sessionManager = SessionManager(requireContext())
-        if (!sessionManager.isAdmin()) {
+        if (!sessionManager.hasAdminAccess()) {
             Toast.makeText(requireContext(), "Only admin can access entries", Toast.LENGTH_SHORT).show()
             return
         }

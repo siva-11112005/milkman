@@ -21,6 +21,8 @@ class AddMilkEntryActivity : AppCompatActivity() {
     private lateinit var sessionManager: SessionManager
 
     private var profiles: List<CustomerEntity> = emptyList()
+    private var filteredProfiles: List<CustomerEntity> = emptyList()
+    private var currentSearchQuery: String = ""
     private var entryType: String = AppConstants.ENTRY_COLLECTION
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +31,7 @@ class AddMilkEntryActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         sessionManager = SessionManager(this)
-        if (!sessionManager.isAdmin()) {
+        if (!sessionManager.hasAdminAccess()) {
             Toast.makeText(this, "Only admin can create entries", Toast.LENGTH_SHORT).show()
             finish()
             return
@@ -41,6 +43,7 @@ class AddMilkEntryActivity : AppCompatActivity() {
         setupToolbar()
         setupSessionSpinner()
         setupDateField()
+        setupProfileSearch()
         observeProfiles()
         updatePreviewAmount()
 
@@ -64,6 +67,19 @@ class AddMilkEntryActivity : AppCompatActivity() {
         binding.toolbar.title = if (isCollection) "Collection Entry" else "Distribution Entry"
         binding.tvEntryPartyLabel.text = if (isCollection) "Supplier" else "Buyer"
         binding.tvAutoPriceLabel.text = if (isCollection) "Buying Price" else "Selling Price"
+        binding.searchEntryCustomer.visibility = if (isCollection) android.view.View.VISIBLE else android.view.View.GONE
+    }
+
+    private fun setupProfileSearch() {
+        binding.searchEntryCustomer.setOnQueryTextListener(object : android.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = false
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                currentSearchQuery = newText.orEmpty().trim()
+                applyProfileFilter()
+                return true
+            }
+        })
     }
 
     private fun setupSessionSpinner() {
@@ -120,26 +136,46 @@ class AddMilkEntryActivity : AppCompatActivity() {
         val source = if (entryType == AppConstants.ENTRY_COLLECTION) viewModel.suppliers else viewModel.buyers
         source.observe(this) { list ->
             profiles = list
-            val labels = if (list.isEmpty()) {
-                listOf("No profiles found")
-            } else {
-                list.map { "${it.name} (₹ %.2f/L)".format(it.pricePerLiter) }
-            }
-            val customerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, labels)
-            customerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.spinnerEntryCustomer.adapter = customerAdapter
-            updatePreviewAmount()
+            applyProfileFilter()
         }
     }
 
+    private fun applyProfileFilter() {
+        filteredProfiles = if (currentSearchQuery.isBlank()) {
+            profiles
+        } else {
+            profiles.filter {
+                it.name.contains(currentSearchQuery, ignoreCase = true) ||
+                    it.phone.contains(currentSearchQuery, ignoreCase = true) ||
+                    it.address.contains(currentSearchQuery, ignoreCase = true)
+            }
+        }
+
+        val labels = if (filteredProfiles.isEmpty()) {
+            listOf("No profiles found")
+        } else {
+            filteredProfiles.map { "${it.name} (₹ %.2f/L)".format(it.pricePerLiter) }
+        }
+
+        val customerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, labels)
+        customerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerEntryCustomer.adapter = customerAdapter
+        binding.btnSaveEntry.isEnabled = filteredProfiles.isNotEmpty()
+        updatePreviewAmount()
+    }
+
     private fun saveEntry() {
-        if (profiles.isEmpty()) {
+        if (filteredProfiles.isEmpty()) {
             val label = if (entryType == AppConstants.ENTRY_COLLECTION) "supplier" else "buyer"
             Toast.makeText(this, "Please add $label first", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val profile = profiles[binding.spinnerEntryCustomer.selectedItemPosition]
+        val profile = filteredProfiles.getOrNull(binding.spinnerEntryCustomer.selectedItemPosition)
+        if (profile == null) {
+            Toast.makeText(this, "Please select a valid profile", Toast.LENGTH_SHORT).show()
+            return
+        }
         val date = binding.etEntryDate.text?.toString().orEmpty()
         val session = binding.spinnerSession.selectedItem?.toString().orEmpty()
         val qty = binding.etQuantity.text?.toString().orEmpty().toDoubleOrNull()
@@ -169,7 +205,7 @@ class AddMilkEntryActivity : AppCompatActivity() {
     }
 
     private fun updatePreviewAmount() {
-        val selected = profiles.getOrNull(binding.spinnerEntryCustomer.selectedItemPosition)
+        val selected = filteredProfiles.getOrNull(binding.spinnerEntryCustomer.selectedItemPosition)
         if (selected == null) {
             binding.tvAutoPrice.text = "₹ 0.00 / L"
             binding.tvTotalAmount.text = "₹ 0.00"

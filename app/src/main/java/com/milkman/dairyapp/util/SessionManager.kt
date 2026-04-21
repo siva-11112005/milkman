@@ -57,6 +57,11 @@ class SessionManager(context: Context) {
 
     fun isSuperUser(): Boolean = getRole() == AppConstants.ROLE_SUPER_USER
 
+    fun hasAdminAccess(): Boolean = isAdmin() || (isSuperUser() && isActingAsAdmin())
+
+    fun effectiveRole(): String =
+        if (isSuperUser() && isActingAsAdmin()) AppConstants.ROLE_ADMIN else getRole()
+
     fun canManageUsersAndCustomers(): Boolean = isAdmin() || isSuperUser()
 
     companion object {

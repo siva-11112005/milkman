@@ -11,6 +11,7 @@ import com.milkman.dairyapp.data.entity.CustomerEntity
 
 class CustomerAdapter(
     private val priceLabel: String,
+    private val onViewSummary: ((CustomerEntity) -> Unit)? = null,
     private val onEdit: ((CustomerEntity) -> Unit)? = null,
     private val onDelete: ((CustomerEntity) -> Unit)? = null
 ) : RecyclerView.Adapter<CustomerAdapter.CustomerViewHolder>() {
@@ -24,7 +25,7 @@ class CustomerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomerViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_customer, parent, false)
-        return CustomerViewHolder(view, priceLabel, onEdit, onDelete)
+        return CustomerViewHolder(view, priceLabel, onViewSummary, onEdit, onDelete)
     }
 
     override fun getItemCount(): Int = items.size
@@ -36,6 +37,7 @@ class CustomerAdapter(
     class CustomerViewHolder(
         itemView: View,
         private val priceLabel: String,
+        private val onViewSummary: ((CustomerEntity) -> Unit)?,
         private val onEdit: ((CustomerEntity) -> Unit)?,
         private val onDelete: ((CustomerEntity) -> Unit)?
     ) : RecyclerView.ViewHolder(itemView) {
@@ -44,6 +46,7 @@ class CustomerAdapter(
         private val tvType: TextView = itemView.findViewById(R.id.tvCustomerType)
         private val tvAddress: TextView = itemView.findViewById(R.id.tvCustomerAddress)
         private val tvPrice: TextView = itemView.findViewById(R.id.tvCustomerPrice)
+        private val btnSummary: MaterialButton = itemView.findViewById(R.id.btnViewSummary)
         private val btnEdit: MaterialButton = itemView.findViewById(R.id.btnEditCustomer)
         private val btnDelete: MaterialButton = itemView.findViewById(R.id.btnDeleteCustomer)
 
@@ -53,6 +56,15 @@ class CustomerAdapter(
             tvType.text = "Type: ${item.type}"
             tvAddress.text = "Address: ${item.address}"
             tvPrice.text = "$priceLabel: ₹ %.2f / L".format(item.pricePerLiter)
+
+            if (onViewSummary == null) {
+                btnSummary.visibility = View.GONE
+                itemView.setOnClickListener(null)
+            } else {
+                btnSummary.visibility = View.VISIBLE
+                btnSummary.setOnClickListener { onViewSummary.invoke(item) }
+                itemView.setOnClickListener { onViewSummary.invoke(item) }
+            }
 
             if (onEdit == null) {
                 btnEdit.visibility = View.GONE

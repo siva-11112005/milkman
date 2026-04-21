@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import com.milkman.dairyapp.data.AppDatabase
+import com.milkman.dairyapp.data.entity.CustomerEntity
 import com.milkman.dairyapp.data.model.MilkEntryWithCustomer
 import com.milkman.dairyapp.data.repository.AuditRepository
 import com.milkman.dairyapp.data.repository.MilkRepository
@@ -35,6 +36,9 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         auditRepository = AuditRepository(db.auditLogDao())
     )
 
+    val suppliers: LiveData<List<CustomerEntity>> = db.customerDao().getCustomersByCategory(AppConstants.CATEGORY_SUPPLIER)
+    val buyers: LiveData<List<CustomerEntity>> = db.customerDao().getCustomersByCategory(AppConstants.CATEGORY_BUYER)
+
     fun getAdminDailySummary(date: String): LiveData<AdminDailySummary> {
         return milkRepository.getEntries(date = date).map { rows ->
             rows.toAdminSummary()
@@ -62,6 +66,16 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 eveningQuantity = eveningQty,
                 earnings = earnings
             )
+        }
+    }
+
+    fun getPartnerDailyAmount(date: String, customerId: Int, entryType: String): LiveData<Double> {
+        return milkRepository.getEntries(
+            date = date,
+            customerId = customerId,
+            entryType = entryType
+        ).map { rows ->
+            rows.sumOf { it.amount }
         }
     }
 

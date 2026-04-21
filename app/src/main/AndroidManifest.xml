@@ -20,6 +20,7 @@
         <activity android:name=".ui.SessionSummaryActivity" />
         <activity android:name=".ui.AuditLogActivity" />
         <activity android:name=".ui.ProfileActivity" />
+        <activity android:name=".ui.PartnerSummaryActivity" />
         <activity android:name=".ui.MonthlyReportActivity" />
         <activity android:name=".ui.MilkHistoryActivity" />
         <activity android:name=".ui.AddMilkEntryActivity" />

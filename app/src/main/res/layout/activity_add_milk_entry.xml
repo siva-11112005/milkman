@@ -38,6 +38,13 @@
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textStyle="bold" />
 
+            <SearchView
+                android:id="@+id/searchEntryCustomer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_8"
+                android:queryHint="Search supplier..." />
+
             <Spinner
                 android:id="@+id/spinnerEntryCustomer"
                 android:layout_width="match_parent"
